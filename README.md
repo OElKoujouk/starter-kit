@@ -10,6 +10,14 @@ Full-stack starter kit industriel avec Next.js 16, Express, Prisma et Tailwind C
 
 ---
 
+## 📖 Documentation
+
+*   [🏗️ Architecture & Standards](./docs/ARCHITECTURE.md) - Comprendre le socle technique.
+*   [🛠️ Guide : Ajouter une Feature](./docs/GUIDE.md) - Tutoriel pas-à-pas.
+*   [🤖 Agent Context (IA)](./docs/AGENT.md) - Instructions pour les assistants IA.
+
+---
+
 ## 🏗️ Architecture "High-End"
 
 Le projet utilise une structure **Monorepo** gérée par Turborepo, séparant strictement les responsabilités pour une maintenance et une scalabilité maximale.
