@@ -1,0 +1,70 @@
+// Prisma Schema - Starter Kit
+// Base de données: PostgreSQL (recommandé) ou MySQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Changer en "mysql" si besoin
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MODÈLES DE BASE (Auth & Users)
+// ============================================
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(USER)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  userAgent String?  @map("user_agent")
+  ipAddress String?  @map("ip_address")
+  revoked   Boolean  @default(false)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ============================================
+// AJOUTER VOS MODÈLES MÉTIER ICI
+// ============================================
+
+// Exemple pour un site de réservation:
+// model Activity {
+//   id          String   @id @default(uuid())
+//   name        String
+//   description String?
+//   price       Decimal  @db.Decimal(10, 2)
+//   createdAt   DateTime @default(now()) @map("created_at")
+//   updatedAt   DateTime @updatedAt @map("updated_at")
+//   
+//   @@map("activities")
+// }

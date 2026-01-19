@@ -1,0 +1,25 @@
+{
+    "name": "starter-kit",
+    "private": true,
+    "packageManager": "npm@10.8.2",
+    "scripts": {
+        "prepare": "husky",
+        "build": "turbo build",
+        "dev": "turbo dev",
+        "lint": "turbo lint",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "workspaces": [
+        "app/*"
+    ],
+    "devDependencies": {
+        "husky": "^9.0.0",
+        "lint-staged": "^16.2.7",
+        "prettier": "^3.7.4",
+        "turbo": "^2.7.4"
+    },
+    "lint-staged": {
+        "**/*": "prettier --write --ignore-unknown"
+    }
+}
