@@ -20,9 +20,8 @@ starter-kit/
 
 ### Prérequis
 
-- Node.js 20+
 - Docker & Docker Compose
-- npm (inclus avec Node.js)
+- Git
 
 ### Installation
 
@@ -31,28 +30,23 @@ starter-kit/
 git clone <url> mon-projet
 cd mon-projet
 
-# 2. Installer les dépendances
-npm install
+# 2. Configurer les variables d'environnement
+cp .env.example .env.dev
+# Éditer .env.dev avec vos valeurs
 
-# 3. Configurer les variables d'environnement
-cp .env.example .env
-# Éditer .env avec vos valeurs
-
-# 4. Démarrer la base de données
-docker-compose -f infra/docker/docker-compose.dev.yml up -d db
-
-# 5. Générer le client Prisma et appliquer les migrations
-cd app/api
-npx prisma generate
-npx prisma migrate dev
-cd ../..
-
-# 6. Démarrer le projet en dev
-npm run dev
+# 3. Lancer l'environnement de développement
+./infra/scripts/dev.sh
 ```
 
-Le client sera accessible sur http://localhost:3000
-L'API sera accessible sur http://localhost:4000/api
+C'est tout ! Le script s'occupe de :
+- ✅ Démarrer PostgreSQL
+- ✅ Builder les images Docker
+- ✅ Exécuter les migrations Prisma
+- ✅ Lancer l'API et le Client
+
+**URLs :**
+- 🌐 Client : http://localhost:3000
+- 🔌 API : http://localhost:4000/api
 
 ## 📦 Stack Technique
 
@@ -111,26 +105,30 @@ app/client/
 ## 🛠️ Scripts disponibles
 
 ```bash
-# Développement
-npm run dev          # Démarre tous les services en dev
+# Démarrage complet (recommandé)
+./infra/scripts/dev.sh
 
-# Build
-npm run build        # Build tous les packages
+# Options du script
+./infra/scripts/dev.sh --fresh      # Reset les conteneurs
+./infra/scripts/dev.sh --migrations # Affiche le status des migrations
 
-# Lint
-npm run lint         # Lint tous les packages
+# Commandes Docker manuelles
+docker compose -f infra/docker/docker-compose.dev.yml up -d      # Démarrer
+docker compose -f infra/docker/docker-compose.dev.yml down       # Arrêter
+docker compose -f infra/docker/docker-compose.dev.yml logs -f    # Voir les logs
 
-# Format
-npm run format       # Formate le code avec Prettier
+# Migrations (dans le conteneur)
+docker compose -f infra/docker/docker-compose.dev.yml exec api npx prisma migrate dev
+docker compose -f infra/docker/docker-compose.dev.yml exec api npx prisma studio
 ```
 
 ## 📝 Variables d'environnement
 
-Copier `.env.example` vers `.env` et configurer :
+Copier `.env.example` vers `.env.dev` et configurer :
 
 ```env
 # Base de données
-DATABASE_URL="postgresql://user:password@localhost:5432/starter_kit"
+DATABASE_URL="postgresql://postgres:postgres@db:5432/starter_kit"
 
 # JWT
 JWT_SECRET="votre-secret-de-32-caracteres-minimum"
@@ -147,9 +145,7 @@ CORS_ORIGIN="http://localhost:3000"
 
 ## 🚢 Déploiement
 
-1. Configurer les variables d'environnement de production
-2. Build : `npm run build`
-3. Démarrer : `npm run start`
+Voir `infra/docker/docker-compose.prod.yml` pour la configuration de production.
 
 ## 📄 License
 
