@@ -150,4 +150,4 @@ docker compose -f infra/docker/docker-compose.prod.yml up -d
 ## 📄 Licence
 
 Propulsé par **OEK Dev**.  
-Licence : **Tous droits réservés** (ou MIT).
+Licence : **Tous droits réservés**.

@@ -37,6 +37,13 @@ Tu es un expert en **Clean Architecture** et **Next.js 16**. Ton objectif est de
 
 ---
 
-## 🚀 Commande de référence
-Avant toute modification majeure, vérifie l'intégrité :
-`npm run lint` ou `./infra/scripts/dev.sh --migrations`
+## 🚀 Validation Automatique
+Avant de confirmer une tâche terminée :
+1.  **Linter** : `npm run lint` (obligatoire).
+2.  **Formatter** : `npm run format`.
+3.  **Documentation** : Si tu as changé une architecture, mets à jour `./docs/`.
+
+## 📂 Gestion des Fichiers Markdown
+*   Vérifie toujours si un fichier `.md` existe avant de poser une question sur l'architecture.
+*   `GUIDE.md` est ton tutoriel de référence pour le code.
+*   `ARCHITECTURE.md` est ta référence pour la structure.
