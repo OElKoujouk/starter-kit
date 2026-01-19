@@ -1,152 +1,145 @@
-# Starter Kit - Monorepo
+# 🚀 Ultimate Full-Stack Starter Kit
 
-Full-stack starter kit avec Next.js, Express, Prisma et Tailwind CSS.
+Full-stack starter kit industriel avec Next.js 16, Express, Prisma et Tailwind CSS 4.
 
-## 🏗️ Architecture
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.1-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React 19](https://img.shields.io/badge/React-19.0-blue?style=for-the-badge&logo=react)](https://react.dev/)
+[![Tailwind 4](https://img.shields.io/badge/Tailwind-4.0-cyan?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Express](https://img.shields.io/badge/Express-4.21-lightgrey?style=for-the-badge&logo=express)](https://expressjs.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-6.0-indigo?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 
-```
+---
+
+## 🏗️ Architecture "High-End"
+
+Le projet utilise une structure **Monorepo** gérée par Turborepo, séparant strictement les responsabilités pour une maintenance et une scalabilité maximale.
+
+```bash
 starter-kit/
 ├── app/
-│   ├── api/          # Back-end Express + Prisma
-│   ├── client/       # Front-end Next.js + Tailwind
-│   └── shared/       # Types et schémas Zod partagés
+│   ├── api/          # 🟢 Backend Express (Clean Architecture)
+│   │   └── src/
+│   │       ├── controllers/  # Bridge HTTP <> Service
+│   │       ├── services/     # Logique Métier (DI / Pure)
+│   │       ├── repositories/ # Accès DB unique via Prisma
+│   │       ├── middleware/   # Auth, Validation, Errors
+│   │       └── validators/   # Schémas Zod (Validation entrante)
+│   ├── client/       # 🔵 Frontend Next.js (Features-First)
+│   │   └── src/
+│   │       ├── app/          # Routes & Layouts (App Router)
+│   │       ├── features/     # Domaines Métiers encapsulés (Auth, i18n...)
+│   │       ├── components/ui/# Design System atomique premium
+│   │       ├── lib/          # Utils (API Fetch typé, Server Actions)
+│   │       └── proxy.ts      # Protection Centralisée (Next 16)
+│   └── shared/       # 🟡 Shared Noyau (Constantes, Types & Schémas)
 ├── infra/
-│   ├── docker/       # Docker Compose
-│   └── scripts/      # Scripts utilitaires
-└── turbo.json        # Configuration Turborepo
+│   ├── docker/       # Orchestration Docker (Dev & Prod)
+│   └── scripts/      # Outils d'automatisation (dev.sh)
+└── turbo.json        # Pipeline de build ultra-rapide
 ```
 
-## 🚀 Démarrage rapide
+---
 
-### Prérequis
+## 🚀 Démarrage Rapide
 
-- Docker & Docker Compose
-- Git
+Tout l'environnement est conteneurisé. **Zéro configuration locale requise.**
 
 ### Installation
 
 ```bash
 # 1. Cloner le repo
-git clone <url> mon-projet
-cd mon-projet
+git clone https://github.com/OElKoujouk/starter-kit.git
+cd starter-kit
 
-# 2. Configurer les variables d'environnement
+# 2. Configurer les secrets
 cp .env.example .env.dev
-# Éditer .env.dev avec vos valeurs
+# Éditer .env.dev avec vos valeurs (JWT_SECRET, etc.)
 
-# 3. Lancer l'environnement de développement
+# 3. Lancer l'environnement
 ./infra/scripts/dev.sh
 ```
 
 C'est tout ! Le script s'occupe de :
-- ✅ Démarrer PostgreSQL
-- ✅ Builder les images Docker
-- ✅ Exécuter les migrations Prisma
-- ✅ Lancer l'API et le Client
+✅ Démarrer PostgreSQL  
+✅ Builder les images Docker  
+✅ Exécuter les migrations Prisma  
+✅ Lancer l'API et le Client
 
-**URLs :**
-- 🌐 Client : http://localhost:3000
-- 🔌 API : http://localhost:4000/api
+### Accès
+🌐 **Client** : [http://localhost:3000](http://localhost:3000)  
+🔌 **API** : [http://localhost:4000/api](http://localhost:4000/api)
 
-## 📦 Stack Technique
+---
 
-### Back-end (`app/api`)
-- **Express** - Framework HTTP
-- **Prisma** - ORM type-safe
-- **Zod** - Validation des entrées
-- **JWT** - Authentification
-- **Pino** - Logging structuré
+## 💎 Points Forts & Stack
 
-### Front-end (`app/client`)
-- **Next.js 16** - Framework React full-stack
-- **React 19** - UI library
-- **Tailwind CSS 4** - Styling utilitaire
-- **Lucide React** - Icônes
+### 🔒 Sécurité & Authentification
+*   **Rotation de Refresh Token** : Session robuste et sécurisée.
+*   **Protection des Routes** : Centralisée dans `proxy.ts` (Next.js 16 compatible).
+*   **Protection XSS & Sanitization** : Nettoyage récursif automatique de toutes les entrées (`body`, `query`, `params`) contre les injections.
+*   **Validation End-to-End** : Contrats de données stricts entre Front & Back via `shared`.
 
-### Infrastructure
-- **Turborepo** - Monorepo tooling
-- **Docker** - Conteneurisation
-- **PostgreSQL** - Base de données
+### 🛠️ Developer Experience (DX)
+*   **Docker-First** : Environnement de dev identique à la production.
+*   **API Fetch Typée** : Gestion automatique des retries et du refresh de token.
+*   **Turborepo** : Builds et tests mis en cache pour une vitesse extrême.
 
-## 🔒 Authentification
+### 📦 Stack Technique
+*   **Back** : Express, Prisma, Zod, JWT, Pino.
+*   **Front** : Next.js 16, React 19, Tailwind CSS 4, Lucide Icons.
+*   **Infra** : Docker, PostgreSQL, Turborepo.
 
-Le starter kit inclut un système d'authentification complet :
+---
 
-- Login / Logout
-- Refresh Token avec rotation
-- Protection des routes
-- Middleware d'autorisation par rôle
+## 🛠️ Scripts & Commandes
 
-## 📁 Structure API
-
-```
-app/api/src/
-├── config/          # Configuration (env, prisma, logger)
-├── middleware/      # Auth, validation, error handler
-├── repositories/    # Accès base de données
-├── routes/          # Points d'entrée HTTP
-├── services/        # Logique métier
-├── types/           # Interfaces TypeScript
-└── validators/      # Schémas Zod
-```
-
-## 🎨 Structure Client
-
-```
-app/client/
-├── app/             # Pages et layouts (App Router)
-├── components/ui/   # Composants réutilisables
-├── lib/             # Utilitaires
-├── context/         # Contexts React
-├── hooks/           # Custom hooks
-└── services/        # Appels API
-```
-
-## 🛠️ Scripts disponibles
+Le script `dev.sh` est votre outil principal :
 
 ```bash
-# Démarrage complet (recommandé)
-./infra/scripts/dev.sh
-
-# Options du script
-./infra/scripts/dev.sh --fresh      # Reset les conteneurs
-./infra/scripts/dev.sh --migrations # Affiche le status des migrations
-
-# Commandes Docker manuelles
-docker compose -f infra/docker/docker-compose.dev.yml up -d      # Démarrer
-docker compose -f infra/docker/docker-compose.dev.yml down       # Arrêter
-docker compose -f infra/docker/docker-compose.dev.yml logs -f    # Voir les logs
-
-# Migrations (dans le conteneur)
-docker compose -f infra/docker/docker-compose.dev.yml exec api npx prisma migrate dev
-docker compose -f infra/docker/docker-compose.dev.yml exec api npx prisma studio
+./infra/scripts/dev.sh           # Démarrage standard
+./infra/scripts/dev.sh --fresh   # Reset complet des conteneurs
+./infra/scripts/dev.sh --migrations # Affiche le statut des migrations
 ```
 
-## 📝 Variables d'environnement
+**Commandes manuelles utiles :**
+```bash
+docker compose -f infra/docker/docker-compose.dev.yml logs -f api    # Logs API
+docker compose -f infra/docker/docker-compose.dev.yml exec api npx prisma studio # DB UI
+```
 
-Copier `.env.example` vers `.env.dev` et configurer :
+---
+
+## 📝 Configuration (.env.dev)
 
 ```env
 # Base de données
 DATABASE_URL="postgresql://postgres:postgres@db:5432/starter_kit"
 
 # JWT
-JWT_SECRET="votre-secret-de-32-caracteres-minimum"
+JWT_SECRET="votre-secret-super-long-et-securise"
 
-# Super Admin
+# Super Admin (Bootstrap automatique)
 SUPER_ADMIN_EMAIL="admin@example.com"
 SUPER_ADMIN_USERNAME="Admin"
-SUPER_ADMIN_PASSWORD="votre-mot-de-passe-securise"
+SUPER_ADMIN_PASSWORD="password123"
 
 # URLs
 FRONTEND_URL="http://localhost:3000"
 CORS_ORIGIN="http://localhost:3000"
 ```
 
+---
+
 ## 🚢 Déploiement
 
-Voir `infra/docker/docker-compose.prod.yml` pour la configuration de production.
+Pour la production :
+```bash
+docker compose -f infra/docker/docker-compose.prod.yml up -d
+```
 
-## 📄 License
+---
 
-MIT
+## 📄 Licence
+
+Propulsé par **OEK Dev**.  
+Licence : **Tous droits réservés** (ou MIT).

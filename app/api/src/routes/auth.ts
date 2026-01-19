@@ -1,13 +1,9 @@
-/**
- * Routes d'authentification.
- */
-
 import { Router } from "express";
 import { validate } from "../middleware/validate";
 import { authMiddleware } from "../middleware/auth";
 import { asyncHandler } from "../middleware/error-handler";
 import { loginSchema, refreshSchema, logoutSchema } from "../validators/auth.validator";
-import { authService } from "../services/auth.service";
+import { authController } from "../controllers/auth.controller";
 
 export const authRouter = Router();
 
@@ -18,14 +14,7 @@ export const authRouter = Router();
 authRouter.post(
     "/login",
     validate({ body: loginSchema }),
-    asyncHandler(async (req, res) => {
-        const { email, password } = req.body;
-        const userAgent = req.headers["user-agent"];
-        const ipAddress = req.ip;
-
-        const result = await authService.login(email, password, userAgent, ipAddress);
-        res.json(result);
-    }),
+    asyncHandler(authController.login),
 );
 
 /**
@@ -35,14 +24,7 @@ authRouter.post(
 authRouter.post(
     "/refresh",
     validate({ body: refreshSchema }),
-    asyncHandler(async (req, res) => {
-        const { refreshToken } = req.body;
-        const userAgent = req.headers["user-agent"];
-        const ipAddress = req.ip;
-
-        const result = await authService.refresh(refreshToken, userAgent, ipAddress);
-        res.json(result);
-    }),
+    asyncHandler(authController.refresh),
 );
 
 /**
@@ -52,11 +34,7 @@ authRouter.post(
 authRouter.post(
     "/logout",
     validate({ body: logoutSchema }),
-    asyncHandler(async (req, res) => {
-        const { refreshToken } = req.body;
-        await authService.logout(refreshToken);
-        res.json({ message: "Déconnexion réussie" });
-    }),
+    asyncHandler(authController.logout),
 );
 
 /**
@@ -66,10 +44,7 @@ authRouter.post(
 authRouter.get(
     "/me",
     authMiddleware,
-    asyncHandler(async (req, res) => {
-        const user = await authService.getMe(req.user!.id);
-        res.json(user);
-    }),
+    asyncHandler(authController.getMe),
 );
 
 /**
@@ -79,8 +54,6 @@ authRouter.get(
 authRouter.post(
     "/logout-all",
     authMiddleware,
-    asyncHandler(async (req, res) => {
-        await authService.logoutAll(req.user!.id);
-        res.json({ message: "Toutes les sessions ont été fermées" });
-    }),
+    asyncHandler(authController.logoutAll),
 );
+

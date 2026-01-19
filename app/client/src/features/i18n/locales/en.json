@@ -1,0 +1,16 @@
+{
+    "common": {
+        "welcome": "Welcome to the Starter Kit",
+        "login": "Login",
+        "logout": "Logout",
+        "register": "Register",
+        "email": "Email",
+        "password": "Password"
+    },
+    "auth": {
+        "login_title": "Login",
+        "login_description": "Enter your credentials to access your account",
+        "no_account": "Don't have an account?",
+        "has_account": "Already have an account?"
+    }
+}

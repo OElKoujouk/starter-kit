@@ -7,8 +7,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { env, logger } from "../config";
 import { AppError } from "../middleware/error-handler";
-import { userRepository } from "../repositories/user.repository";
-import { refreshTokenRepository } from "../repositories/refresh-token.repository";
+import { userRepository as userRepo } from "../repositories/user.repository";
+import { refreshTokenRepository as refreshRepo } from "../repositories/refresh-token.repository";
 
 const JWT_SECRET = env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRY = "15m";
@@ -33,7 +33,12 @@ export interface UserProfileResponse {
     role: string;
 }
 
-export const authService = {
+export class AuthService {
+    constructor(
+        private userRepository = userRepo,
+        private refreshTokenRepository = refreshRepo
+    ) { }
+
     /**
      * Authentifie un utilisateur et génère les tokens
      */
@@ -43,7 +48,7 @@ export const authService = {
         userAgent?: string,
         ipAddress?: string,
     ): Promise<LoginResponse> {
-        const user = await userRepository.findByEmail(email.trim().toLowerCase());
+        const user = await this.userRepository.findByEmail(email.trim().toLowerCase());
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
             logger.warn({ email, ip: ipAddress }, "ECHEC AUTH: Identifiants invalides");
@@ -62,7 +67,7 @@ export const authService = {
         );
 
         // Générer le refresh token
-        const refreshTokenData = await refreshTokenRepository.create(user.id, userAgent, ipAddress);
+        const refreshTokenData = await this.refreshTokenRepository.create(user.id, userAgent, ipAddress);
 
         return {
             token: accessToken,
@@ -75,25 +80,25 @@ export const authService = {
                 role: user.role,
             },
         };
-    },
+    }
 
     /**
      * Renouvelle l'access token via un refresh token valide
      */
     async refresh(token: string, userAgent?: string, ipAddress?: string): Promise<LoginResponse> {
-        const tokenData = await refreshTokenRepository.findValidToken(token);
+        const tokenData = await this.refreshTokenRepository.findValidToken(token);
 
         if (!tokenData) {
             throw new AppError(401, "Refresh token invalide ou expiré");
         }
 
         if (!tokenData.user.active) {
-            await refreshTokenRepository.revoke(token);
+            await this.refreshTokenRepository.revoke(token);
             throw new AppError(403, "Compte désactivé");
         }
 
         // Rotation du Refresh Token
-        await refreshTokenRepository.revoke(token);
+        await this.refreshTokenRepository.revoke(token);
 
         const accessToken = jwt.sign(
             { sub: tokenData.user.id, role: tokenData.user.role },
@@ -101,7 +106,7 @@ export const authService = {
             { expiresIn: ACCESS_TOKEN_EXPIRY },
         );
 
-        const newRefreshToken = await refreshTokenRepository.create(
+        const newRefreshToken = await this.refreshTokenRepository.create(
             tokenData.user.id,
             userAgent,
             ipAddress,
@@ -118,29 +123,29 @@ export const authService = {
                 role: tokenData.user.role,
             },
         };
-    },
+    }
 
     /**
      * Déconnecte l'utilisateur (révoque le token)
      */
     async logout(refreshToken?: string): Promise<void> {
         if (refreshToken) {
-            await refreshTokenRepository.revoke(refreshToken);
+            await this.refreshTokenRepository.revoke(refreshToken);
         }
-    },
+    }
 
     /**
      * Déconnecte toutes les sessions de l'utilisateur
      */
     async logoutAll(userId: string): Promise<void> {
-        await refreshTokenRepository.revokeAllForUser(userId);
-    },
+        await this.refreshTokenRepository.revokeAllForUser(userId);
+    }
 
     /**
      * Récupère le profil de l'utilisateur authentifié
      */
     async getMe(userId: string): Promise<UserProfileResponse> {
-        const user = await userRepository.findById(userId);
+        const user = await this.userRepository.findById(userId);
 
         if (!user) {
             throw new AppError(404, "Utilisateur introuvable");
@@ -152,5 +157,7 @@ export const authService = {
             email: user.email,
             role: user.role,
         };
-    },
-};
+    }
+}
+
+export const authService = new AuthService();

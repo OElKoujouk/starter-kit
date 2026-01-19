@@ -8,6 +8,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { authMiddleware } from "./middleware/auth";
+import { xssMiddleware } from "./middleware/xss";
 import { errorHandler } from "./middleware/error-handler";
 import { apiRouter } from "./routes";
 import { env, logger } from "./config";
@@ -20,6 +21,7 @@ app.set("trust proxy", 1);
 // Middlewares de base
 app.use(express.json());
 app.use(cookieParser());
+app.use(xssMiddleware);
 app.use(helmet());
 
 // Configuration CORS

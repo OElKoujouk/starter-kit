@@ -58,19 +58,19 @@ echo ""
 # ---------- NETTOYAGE SI --fresh ----------
 if [ "$DO_FRESH" -eq 1 ]; then
   info "Nettoyage complet demandé..."
-  docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" down --remove-orphans
+  docker compose -p starter-kit -f "$COMPOSE_FILE" --env-file "$ENV_FILE" down --remove-orphans
 fi
 
 # ---------- DÉMARRAGE DB ----------
 info "Démarrage de PostgreSQL..."
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d db
+docker compose -p starter-kit -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d db
 
 # Attendre que la DB soit prête
 info "Attente de la base de données..."
 sleep 3
 
 # Vérifier que la DB est healthy
-until docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T db pg_isready -U postgres > /dev/null 2>&1; do
+until docker compose -p starter-kit -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T db pg_isready -U postgres > /dev/null 2>&1; do
   echo -n "."
   sleep 1
 done
@@ -79,7 +79,7 @@ ok "Base de données prête"
 
 # ---------- BUILD & START SERVICES ----------
 info "Build et démarrage des services..."
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d --build api client
+docker compose -p starter-kit -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d --build api client
 
 # Attendre que l'API soit prête
 info "Attente de l'API..."
@@ -87,19 +87,19 @@ sleep 5
 
 # ---------- MIGRATIONS ----------
 info "Exécution des migrations Prisma..."
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T api npx prisma migrate deploy || {
+docker compose -p starter-kit -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T api npx prisma migrate deploy || {
   warn "Migrations deploy échouées, tentative avec migrate dev..."
-  docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T api npx prisma migrate dev --name init
+  docker compose -p starter-kit -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T api npx prisma migrate dev --name init
 }
 
 # ---------- PRISMA GENERATE ----------
 info "Génération du client Prisma..."
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T api npx prisma generate > /dev/null
+docker compose -p starter-kit -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T api npx prisma generate > /dev/null
 
 # ---------- STATUS MIGRATIONS ----------
 if [ "$DO_MIGRATIONS" -eq 1 ]; then
   info "Status des migrations:"
-  docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T api npx prisma migrate status || true
+  docker compose -p starter-kit -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T api npx prisma migrate status || true
 fi
 
 echo ""
@@ -111,7 +111,7 @@ echo "🔌 API    : http://localhost:4000/api"
 echo "------------------------------------------------"
 echo ""
 echo "💡 Commandes utiles:"
-echo "   Logs API    : docker compose -f $COMPOSE_FILE logs -f api"
-echo "   Logs Client : docker compose -f $COMPOSE_FILE logs -f client"
-echo "   Prisma Studio: docker compose -f $COMPOSE_FILE exec api npx prisma studio"
-echo "   Arrêter     : docker compose -f $COMPOSE_FILE down"
+echo "   Logs API    : docker compose -p starter-kit -f $COMPOSE_FILE logs -f api"
+echo "   Logs Client : docker compose -p starter-kit -f $COMPOSE_FILE logs -f client"
+echo "   Prisma Studio: docker compose -p starter-kit -f $COMPOSE_FILE exec api npx prisma studio"
+echo "   Arrêter     : docker compose -p starter-kit -f $COMPOSE_FILE down"

@@ -40,6 +40,30 @@ const envSchema = z.object({
     SUPER_ADMIN_EMAIL: z.string().min(1, "SUPER_ADMIN_EMAIL est requis"),
     SUPER_ADMIN_USERNAME: z.string().min(1, "SUPER_ADMIN_USERNAME est requis"),
     SUPER_ADMIN_PASSWORD: z.string().min(1, "SUPER_ADMIN_PASSWORD est requis"),
+
+    // Email Config
+    EMAIL_FROM: z.string().email().default("noreply@example.com"),
+    EMAIL_PROVIDER: z.enum(["smtp", "resend", "console"]).default("console"),
+
+    // SMTP (si EMAIL_PROVIDER=smtp)
+    SMTP_HOST: z.string().optional(),
+    SMTP_PORT: z.coerce.number().optional(),
+    SMTP_USER: z.string().optional(),
+    SMTP_PASS: z.string().optional(),
+
+    // Resend (si EMAIL_PROVIDER=resend)
+    RESEND_API_KEY: z.string().optional(),
+
+    // Storage Config
+    STORAGE_PROVIDER: z.enum(["local", "s3"]).default("local"),
+    UPLOAD_DIR: z.string().default("uploads"),
+
+    // S3 Config (si STORAGE_PROVIDER=s3)
+    S3_BUCKET: z.string().optional(),
+    S3_REGION: z.string().optional(),
+    S3_ACCESS_KEY: z.string().optional(),
+    S3_SECRET_KEY: z.string().optional(),
+    S3_ENDPOINT: z.string().optional(), // Pour Minio/DigitalOcean
 });
 
 // Parse et valide les variables d'environnement au démarrage
