@@ -58,7 +58,7 @@ C'est tout ! Le script s'occupe de :
 - **Pino** - Logging structuré
 
 ### Front-end (`app/client`)
-- **Next.js 15** - Framework React full-stack
+- **Next.js 16** - Framework React full-stack
 - **React 19** - UI library
 - **Tailwind CSS 4** - Styling utilitaire
 - **Lucide React** - Icônes
